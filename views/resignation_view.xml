@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Define the tree view for the hr.resignation model -->
+        <record id="employee_resignation_tree" model="ir.ui.view">
+            <field name="name">hr.resignation.tree</field>
+            <field name="model">hr.resignation</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <tree string="Employee Resignation">
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="employee_contract"/>
+                    <field name="joined_date" readonly="1"/>
+                    <field name="expected_revealing_date"/>
+                    <field name="approved_revealing_date"/>
+                    <field name="resignation_type"/>
+                    <field name="notice_period"/>
+                    <field name="state" widget="badge"
+                           decoration-warning="state == 'confirm'"
+                           decoration-info="state == 'draft'"
+                           decoration-success="state == 'approved'"
+                           decoration-danger="state == 'cancel'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Define the form view for the hr.resignation model -->
+        <record id="employee_resignation_form" model="ir.ui.view">
+            <field name="name">hr.resignation.form</field>
+            <field name="model">hr.resignation</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <form string="Employee Resignation">
+                    <header>
+                        <!-- Define buttons for various actions -->
+                        <button string="Confirm" type="object" name="confirm_resignation" states="draft" confirm="Are you sure to confirm the Resignation Request "
+                        class="oe_highlight"/>
+                        <button string="Cancel" type="object" name="cancel_resignation" confirm = "Are you sure to Cancel" states="draft"/>
+                        <button string="Approve" type="object"  groups="hr_holidays.group_hr_holidays_responsible,hr.group_hr_user" 
+                        name="approve_resignation" confirm ="Are you sure to Approve the Resignation Request" states="confirm"/>
+                        <button string="Reject" type="object" groups="hr_holidays.group_hr_holidays_responsible,hr.group_hr_user" 
+                        name="reject_resignation" confirm ="Are you sure to Reject the Resignation Request" states="confirm"/>
+
+                        <button string="Set to Draft" type="object" confirm = "Are you sure to Draft the Resignation Request " groups="custom_hr_groups.group_hr"
+                        name="reset_to_draft" states="approved"/>
+                        <button string="User Deactivate" type="object" confirm="Are you sure you want to deactivate the user's login and mark the user as resigned or fired" name="archive_resignation"  groups="custom_hr_groups.group_hr" states="approved"/>
+                        <button string="Print Relieving Letter" type="object"
+                            name="action_print_relieving_letter"
+                            class="btn-secondary"
+                            groups="hr.group_hr_user"
+                            attrs="{'invisible': [('state', 'not in', ['approved', 'archived'])]}"/>
+                        <button string="Send Relieving Letter" type="object"
+                            name="action_send_relieving_letter"
+                            class="btn-primary"
+                            confirm="Send the Relieving and Experience Letter to the employee's work email?"
+                            groups="hr.group_hr_user"
+                            attrs="{'invisible': [('state', 'not in', ['approved', 'archived'])]}"/>
+<!-- group = "custom_hr_groups.group_Employee_Resign" -->
+                        <!-- Define a status bar for the state field -->
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                    </header>
+                    <field name="deactivate_button_clicked" invisible="1"/>
+
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                                
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Employee Details">
+                            <field name="read_only" invisible="1"/>
+                                <field name="employee_id" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' , 'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="employee_id" attrs="{'readonly': [('state', 'in', ['confirm', 'approved', 'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+                                <field name="parent_id"/>
+
+                                <field name="department_id" attrs="{'readonly': [('state', 'in', ['draft','confirm', 'approved', 'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="department_id" attrs="{'readonly': [('state', 'in', ['draft','confirm', 'approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+
+                                <field name="employee_contract" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' , 'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="employee_contract" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' , 'cancel'])]}" groups="custom_hr_groups.group_hr"/>             </group>
+                            <group string="Dates">
+                                <field name="applied_date" readonly="1"/>
+                                <field name="joined_date" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' , 'cancel'])]}" groups="custom_hr_groups.group_hr_employee" />
+                                <field name="joined_date" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' , 'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+
+                                <field name="expected_revealing_date" attrs="{'readonly': [('state', 'in', ['confirm', 'approved', 'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="expected_revealing_date" attrs="{'readonly': [('state', 'in', ['approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+
+                                <field name="approved_revealing_date" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="approved_revealing_date" attrs="{'readonly': [('state', 'in', ['approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+
+                                <field name="notice_period" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="notice_period" attrs="{'readonly': [('state', 'in', ['approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+
+                                <field name="reporting_officer_confirm_date" readonly="1" groups="custom_hr_groups.group_hr"/>
+                                <field name="hr_approved_date" readonly="1" groups="custom_hr_groups.group_hr"/>
+                            </group>
+                            <group string="Resignation Details">
+                                
+                                <field name="resignation_type" string="Type" attrs="{'readonly': [('state', 'in', ['confirm', 'approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="resignation_type" string="Type"  attrs="{'readonly': [('state', 'in', ['approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+                                <field name="reason" attrs="{'readonly': [('state', 'in', ['confirm', 'approved', 'cancel'])]}" groups="custom_hr_groups.group_hr_employee"/>
+                                <field name="reason" attrs="{'readonly':[('state', 'in', ['approved' ,'cancel'])]}" groups="custom_hr_groups.group_hr"/>
+                                <field name="employee_reason" readonly="1" placeholder="Reason provided by employee"/>
+
+                    
+                            </group>
+                             <group>
+              
+            
+              <field name="hr_remarks" placeholder="HR Remarks" groups="custom_hr_groups.group_hr"
+       attrs="{'readonly': [('state', 'in', ['approved', 'cancel'])]}"/>
+
+                      
+            </group>
+
+            
+                        </group>
+                        <!-- NOC Attachments -->
+                        <group string="NOC Attachments">
+                            <field name="noc_attachment_ids" widget="many2many_binary"
+                                   string="Upload NOC"
+                                   attrs="{'readonly': [('state', 'in', ['approved', 'cancel', 'archived'])]}"/>
+                        </group>
+
+                        <!-- invisible fields for attrs evaluation -->
+                        <field name="exit_process_type" invisible="1"/>
+                        <field name="relieving_letter_sent" invisible="1"/>
+                        <field name="exit_interview_submitted" invisible="1"/>
+
+                        <!-- Exit Interview Section -->
+                        <group string="Exit Interview">
+                            <field name="exit_process_type" groups="hr.group_hr_user"
+                                attrs="{'readonly': [('state', 'in', ['cancel', 'archived'])]}"/>
+                            <!-- Mobile: readonly, HR cannot manually tick -->
+                            <field name="exit_interview_submitted" readonly="1"
+                                attrs="{'invisible': [('exit_process_type', '!=', 'mobile')]}"
+                                groups="hr.group_hr_user"/>
+                            <!-- Face to face: HR ticks it manually; auto-stamps date on save -->
+                            <field name="exit_interview_submitted"
+                                attrs="{'invisible': [('exit_process_type', '!=', 'face_to_face')],
+                                        'readonly': [('state', 'in', ['cancel', 'archived'])]}"
+                                groups="hr.group_hr_user"/>
+                            <field name="exit_interview_submitted_date" readonly="1"
+                                attrs="{'invisible': [('exit_interview_submitted', '=', False)]}"/>
+                        </group>
+
+                        <!-- Generate Questions button (HR only, face-to-face mode) -->
+                        <div attrs="{'invisible': ['|', ('exit_process_type', '=', 'mobile'), ('state', 'in', ['cancel', 'archived'])]}">
+                            <button string="Generate Exit Questions" type="object"
+                                name="action_generate_exit_questions"
+                                class="btn-secondary"
+                                groups="hr.group_hr_user"/>
+                        </div>
+
+                        <!-- Exit Interview Answers inline list -->
+                        <notebook attrs="{'invisible': [('exit_answer_ids', '=', [])]}">
+                            <page string="Exit Interview Answers">
+                                <field name="exit_answer_ids"
+                                    attrs="{'readonly': ['|', ('exit_process_type', '=', 'mobile'), ('state', 'in', ['cancel', 'archived'])]}">
+                                    <tree editable="bottom">
+                                        <field name="question_id" readonly="1"/>
+                                        <field name="answer_type" readonly="1" optional="hide"/>
+                                        <!-- Yes/No answer -->
+                                        <field name="answer_yes_no"
+                                            attrs="{'invisible': [('answer_type', '!=', 'yes_no')],
+                                                    'required': [('answer_type', '=', 'yes_no')]}"/>
+                                        <!-- Dropdown answer -->
+                                        <field name="answer_dropdown_id"
+                                            attrs="{'invisible': [('answer_type', '!=', 'dropdown')],
+                                                    'required': [('answer_type', '=', 'dropdown')]}"/>
+                                        <!-- Text answer -->
+                                        <field name="answer_text"
+                                            attrs="{'invisible': [('answer_type', '!=', 'text')],
+                                                    'required': [('answer_type', '=', 'text')]}"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                    <!-- Define the chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        
+        <record model="ir.actions.act_window" id="view_employee_resignation">
+            <field name="name">Employee Resignation</field>
+            <field name="res_model">hr.resignation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state', 'in', ('draft', 'confirm','cancel'))]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Employee Resignation Form</p>
+            </field>
+        </record>
+
+        <!-- Define the menu items for accessing the resignation views -->
+        <menuitem id="employee_resignation" name="Resignation" groups="base.group_user"
+                  web_icon="ent_hr_resignation,static/description/resignation_web.png" sequence="21"/>
+        <menuitem id="employee_resignation_request" parent="employee_resignation" name="Resignation Request"
+                  action="view_employee_resignation" groups="base.group_user" sequence="4"/>
+
+     
+     
+     
+     
+     <record model="ir.ui.view" id="hr_employee_resigned_filter">
+    <field name="name">hr.employee.form.filter</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_filter"/>
+    <field name="arch" type="xml">
+        <field name="name" position="after"/> 
+        <field name="job_id" position="after">
+            <filter string="Current Employees" name="active" domain="[('resigned', '=', False), ('fired', '=', False)]"/>
+            <filter string="Resigned Employees" name="resigned" domain="[('resigned', '=', True)]"/>
+            <filter string="Notice period Employees" name="notice_period" domain="[('notice_period_approved', '=', True),('resigned', '=', False)]"/>
+            <filter string="Fired Employees" name="fired" domain="[('fired', '=', True)]"/>
+        </field>
+    </field>
+</record>
+
+
+
+
+      <record model="ir.ui.view" id="hr_view_employee_form_inherit">
+    <field name="name">hr.employee.form.inherit</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_form"/>
+    <field name="arch" type="xml">
+
+         <header>
+          <header>
+               <button name="action_resignation_confirmation" string="Resignation Confirmation" groups="custom_hr_groups.group_hr" confirm ="Final confirmation for the Employee Resignation" type="object" class="btn-primary" attrs="{'invisible': ['|','|',('notice_period_approved', '=', False),('resigned', '=', True),('fired', '=', True)]}"/>
+            </header>  
+<header>
+    <button name="action_UnResign" string="Activate User" groups="custom_hr_groups.group_hr" confirm ="Confirmation to make User Active" type="object" class="btn-primary" 
+            attrs="{'invisible': ['|', ('resigned', '=', False), ('notice_period_approved', '=', False), ('fired', '=', False)]}"/>
+</header>
+
+
+            <field name="fired" invisible="1"/> 
+            <field name="active" invisible="1"/>
+            <field name="notice_period_approved" invisible="1"/> 
+            <field name="resigned" invisible="1"/> 
+               <widget name="web_ribbon" title="Resigned" bg_color="bg-danger" attrs="{'invisible': ['|','|', ('resigned', '=', False), ('fired', '=', True),('notice_period_approved', '=', False)]}"/> 
+         
+                          <widget name="web_ribbon" title="Notice Period" bg_color="bg-warning" attrs="{'invisible': ['|','|', ('resigned', '=', True), ('fired', '=', True),('notice_period_approved', '=', False)]}"/> 
+            <widget name="web_ribbon" title="Active" bg_color="bg-success" attrs="{'invisible': ['|','|', ('resigned', '=', True), ('fired', '=', True),('notice_period_approved', '=', True)]}"/>
+ <widget name="web_ribbon" title="Fired" bg_color="bg-dark" attrs="{'invisible': ['|','|', ('resigned', '=', True), ('fired', '=', False),('notice_period_approved', '=', True)]}"/> 
+                 <!--  <widget name="web_ribbon" title="Notice Period" bg_color="bg-danger" attrs="{'invisible': [('resigned', '=', True)]}"/> 
+  <widget name="web_ribbon" title="Resigned" bg_color="bg-dark" attrs="{'invisible': [('fired', '=', True)]}"/> 
+                -->
+      </header>
+    </field>
+</record>
+
+
+
+
+    </data>
+</odoo>

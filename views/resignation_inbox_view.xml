@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- Tree view -->
+        <record id="hr_resignation_inbox_tree" model="ir.ui.view">
+            <field name="name">hr.resignation.inbox.tree</field>
+            <field name="model">hr.resignation.inbox</field>
+            <field name="arch" type="xml">
+                <tree string="Resignation Email Inbox"
+                      decoration-success="state == 'processed'"
+                      decoration-warning="state == 'unresolved'"
+                      decoration-info="state == 'duplicate'">
+                    <field name="received_date"/>
+                    <field name="subject"/>
+                    <field name="email_from"/>
+                    <field name="employee_id"/>
+                    <field name="resignation_id"/>
+                    <field name="state" widget="badge"
+                           decoration-success="state == 'processed'"
+                           decoration-warning="state == 'unresolved'"
+                           decoration-info="state == 'duplicate'"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view -->
+        <record id="hr_resignation_inbox_form" model="ir.ui.view">
+            <field name="name">hr.resignation.inbox.form</field>
+            <field name="model">hr.resignation.inbox</field>
+            <field name="arch" type="xml">
+                <form string="Resignation Email">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="subject" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Email Details">
+                                <field name="email_from" readonly="1"/>
+                                <field name="received_date" readonly="1"/>
+                                <field name="state" widget="badge"
+                                       decoration-success="state == 'processed'"
+                                       decoration-warning="state == 'unresolved'"
+                                       decoration-info="state == 'duplicate'"/>
+                            </group>
+                            <group string="Resolution">
+                                <field name="employee_id" readonly="1"/>
+                                <field name="resignation_id" readonly="1"/>
+                                <field name="notes" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Email Body">
+                            <field name="raw_body" readonly="1" nolabel="1" widget="html"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_hr_resignation_inbox" model="ir.actions.act_window">
+            <field name="name">Resignation Email Inbox</field>
+            <field name="res_model">hr.resignation.inbox</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu: Resignation > Resignation Email Inbox -->
+        <menuitem
+            id="menu_hr_resignation_inbox"
+            name="Resignation Email Inbox"
+            parent="employee_resignation"
+            action="action_hr_resignation_inbox"
+            groups="hr.group_hr_user"
+            sequence="6"/>
+
+    </data>
+</odoo>

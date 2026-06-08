@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- ── Tight-margin paperformat (avoids the default 40 mm gap) ── -->
+        <record id="paperformat_relieving_letter" model="report.paperformat">
+            <field name="name">A4 Relieving Letter</field>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">8</field>
+            <field name="margin_bottom">8</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- ── Report Action ─────────────────────────────────────────── -->
+        <record id="action_report_relieving_letter" model="ir.actions.report">
+            <field name="name">Relieving and Experience Letter</field>
+            <field name="model">hr.resignation</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ent_hr_resignation.report_relieving_letter_document</field>
+            <field name="report_file">ent_hr_resignation.report_relieving_letter_document</field>
+            <field name="print_report_name">'Relieving_Letter_' + object.employee_id.name</field>
+            <field name="paperformat_id" ref="ent_hr_resignation.paperformat_relieving_letter"/>
+            <field name="binding_model_id" ref="ent_hr_resignation.model_hr_resignation"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- ── Outer wrapper ─────────────────────────────────────────── -->
+        <template id="report_relieving_letter_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="ent_hr_resignation.report_relieving_letter_template"/>
+                </t>
+            </t>
+        </template>
+
+        <!-- ── Main Letter Template ──────────────────────────────────── -->
+        <template id="report_relieving_letter_template">
+            <div style="font-family: 'Times New Roman', Times, serif;
+                        font-size: 12pt;
+                        margin: 0;
+                        padding: 0 40px 20px 40px;
+                        min-height: 260mm;
+                        display: flex;
+                        flex-direction: column;">
+
+                <!-- ─ Company Header ─────────────────────────────────
+                     CIN is the last row INSIDE the table so it appears
+                     above the border-bottom divider line.              -->
+                <table width="100%" style="border-collapse:collapse;
+                                           border-bottom:2px solid #000;
+                                           padding-bottom:6px;
+                                           margin-bottom:0;">
+                    <tr>
+                        <td style="width:110px; vertical-align:middle; padding-right:12px;">
+                            <t t-if="o.employee_id.company_id.logo">
+                                <img t-att-src="image_data_uri(o.employee_id.company_id.logo)"
+                                     style="max-height:90px; max-width:100px;"/>
+                            </t>
+                        </td>
+                        <td style="vertical-align:middle; line-height:1.45;">
+                            <div style="font-size:13pt; font-weight:bold;">
+                                <t t-esc="o.employee_id.company_id.name.upper()"/>
+                            </div>
+                            <!-- Corporate Office: uses custom lines if filled, else falls back to standard fields -->
+                            <t t-if="o.employee_id.company_id.corporate_office_line1">
+                                <div>
+                                    <strong>Corporate Office</strong>:
+                                    <t t-esc="o.employee_id.company_id.corporate_office_line1"/>
+                                </div>
+                                <t t-if="o.employee_id.company_id.corporate_office_line2">
+                                    <div>
+                                        <t t-esc="o.employee_id.company_id.corporate_office_line2"/>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <div>
+                                    <t t-if="o.employee_id.company_id.street">
+                                        <strong>Corporate Office</strong>:
+                                        <t t-esc="o.employee_id.company_id.street"/>,
+                                    </t>
+                                    <t t-if="o.employee_id.company_id.street2">
+                                        <t t-esc="o.employee_id.company_id.street2"/>,
+                                    </t>
+                                </div>
+                                <div>
+                                    <t t-if="o.employee_id.company_id.city">
+                                        <t t-esc="o.employee_id.company_id.city"/>
+                                    </t>
+                                    <t t-if="o.employee_id.company_id.zip">
+                                        - <t t-esc="o.employee_id.company_id.zip"/>.
+                                    </t>
+                                </div>
+                            </t>
+                            <!-- Phone -->
+                            <t t-if="o.employee_id.company_id.corporate_phone">
+                                <div>
+                                    Phone: <t t-esc="o.employee_id.company_id.corporate_phone"/>
+                                </div>
+                            </t>
+                            <t t-elif="o.employee_id.company_id.phone">
+                                <div>
+                                    Phone: <t t-esc="o.employee_id.company_id.phone"/>
+                                </div>
+                            </t>
+                            <!-- Head Office -->
+                            <t t-if="o.employee_id.company_id.head_office_address">
+                                <div>
+                                    <strong>Head Office</strong>:
+                                    <t t-esc="o.employee_id.company_id.head_office_address"/>
+                                </div>
+                            </t>
+                            <!-- Email + Website -->
+                            <div>
+                                <t t-if="o.employee_id.company_id.email">
+                                    Email: <t t-esc="o.employee_id.company_id.email"/>
+                                </t>
+                                <t t-if="o.employee_id.company_id.website">
+                                    web: <t t-esc="o.employee_id.company_id.website"/>
+                                </t>
+                            </div>
+                            <!-- CIN: inside header, BEFORE the border-bottom line -->
+                            <t t-if="o.employee_id.company_id.company_registry">
+                                <div style="margin-top:2px;">
+                                    CIN: <t t-esc="o.employee_id.company_id.company_registry"/>
+                                </div>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+                <!-- ─────────────── horizontal line is the table's border-bottom ─ -->
+
+                <!-- Letter body grows to fill page -->
+                <div style="flex: 1;">
+
+                    <!-- ─ Location and Date ───────────────────────── -->
+                    <div style="margin-top:10px; margin-bottom:2px;">
+                        <t t-esc="o.employee_id.company_id.city or 'Chennai'"/>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <t t-esc="o.approved_revealing_date.strftime('%B %dth %Y') if o.approved_revealing_date else ''"/>
+                    </div>
+
+                    <!-- ─ Recipient ──────────────────────────────── -->
+                    <div style="margin-bottom:2px;">To</div>
+                    <div style="margin-bottom:8px; line-height:1.6;">
+                        <strong>
+                            <t t-if="o.employee_id.gender == 'male'">Mr. </t>
+                            <t t-else="">Ms. </t>
+                            <t t-esc="((o.employee_id.firstname or '') + ' ' + (o.employee_id.lastname or '')).strip().upper() or o.employee_id.name.upper()"/>,
+                        </strong><br/>
+                        <t t-if="o.employee_id.presentaddress">
+                            <t t-foreach="o.employee_id.presentaddress.split(',')" t-as="addr_line">
+                                <t t-if="addr_line.strip()">
+                                    <t t-esc="addr_line.strip()"/><t t-if="not addr_line_last">,</t><br/>
+                                </t>
+                            </t>
+                        </t>
+                    </div>
+
+                    <!-- ─ Contact ────────────────────────────────── -->
+                    <div style="margin-bottom:12px; line-height:1.6;">
+                        <t t-if="o.employee_id.mobile_phone">
+                            Ph: <t t-esc="o.employee_id.mobile_phone"/><br/>
+                        </t>
+                        <t t-if="o.employee_id.work_email">
+                            <strong>Email: <t t-esc="o.employee_id.work_email"/></strong>
+                        </t>
+                    </div>
+
+                    <!-- ─ Salutation ─────────────────────────────── -->
+                    <div style="margin-bottom:10px;">
+                        Dear <strong>
+                            <t t-if="o.employee_id.gender == 'male'">Mr. </t>
+                            <t t-else="">Ms. </t>
+                            <t t-esc="((o.employee_id.firstname or '') + ' ' + (o.employee_id.lastname or '')).strip() or o.employee_id.name"/>
+                        </strong>,
+                    </div>
+
+                    <!-- ─ Subject ────────────────────────────────── -->
+                    <div style="margin-bottom:14px;">
+                        <strong><u>Sub: Relieving and Experience Letter - Reg.</u></strong>
+                    </div>
+
+                    <!-- ─ Paragraph 1 ────────────────────────────── -->
+                    <div style="text-align:justify; margin-bottom:16px; line-height:2.0;">
+                        This is in reference to your resignation. Wherein you had requested to be
+                        relieved from your services on
+                        <t t-esc="o.joined_date.strftime('%d/%m/%Y') if o.joined_date else ''"/>.
+                    </div>
+
+                    <!-- ─ Paragraph 2 ────────────────────────────── -->
+                    <div style="text-align:justify; margin-bottom:16px; line-height:2.0;">
+                        We wish to inform you that your resignation has been accepted and you shall
+                        be relieved from your duties as
+                        <strong>
+                            <t t-esc="o.employee_id.job_id.name if o.employee_id.job_id else 'Employee'"/>.
+                            (From
+                            <t t-esc="o.joined_date.strftime('%d/%m/%Y') if o.joined_date else ''"/>
+                            to
+                            <t t-esc="o.approved_revealing_date.strftime('%d/%m/%Y') if o.approved_revealing_date else ''"/>)
+                        </strong>
+                    </div>
+
+                    <!-- ─ Paragraph 3 ────────────────────────────── -->
+                    <div style="text-align:justify; margin-bottom:16px; line-height:2.0;">
+                        During this period, your conduct was good and we would like to confirm
+                        that your full &amp; final settlement was already cleared with the
+                        organization.
+                    </div>
+
+                    <!-- ─ Paragraph 4 ────────────────────────────── -->
+                    <div style="text-align:justify; margin-bottom:0; line-height:2.0;">
+                        We appreciate your contributions made to the organization and wish you
+                        all the best for your future endeavors.
+                    </div>
+
+                </div><!-- end flex body -->
+
+                <!-- ─ Signature — anchored to bottom ────────────── -->
+                <div style="margin-top:40px;">
+                    <div style="margin-bottom:6px;">
+                        For <t t-esc="o.employee_id.company_id.name"/>
+                    </div>
+                    <t t-if="o.employee_id.company_id.relieving_letter_signature">
+                        <img t-att-src="image_data_uri(o.employee_id.company_id.relieving_letter_signature)"
+                             style="height:110px; width:auto; display:block;"/>
+                    </t>
+                    <div style="margin-top:6px;">
+                        Authorized Signatory
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+    </data>
+</odoo>

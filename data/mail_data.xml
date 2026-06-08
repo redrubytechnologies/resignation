@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--
+            Mail alias for incoming resignation emails.
+            Once the Odoo outgoing mail server is configured with a domain,
+            employees can send resignation emails to:
+                resignation@<your-domain>
+
+            Every email arriving at this alias is routed to
+            hr.resignation.inbox.message_new() for automatic processing.
+        -->
+        <record id="mail_alias_hr_resignation" model="mail.alias">
+            <field name="alias_name">resignation</field>
+            <field name="alias_model_id" ref="ent_hr_resignation.model_hr_resignation_inbox"/>
+            <field name="alias_contact">everyone</field>
+            <field name="alias_defaults">{}</field>
+        </record>
+
+    </data>
+</odoo>

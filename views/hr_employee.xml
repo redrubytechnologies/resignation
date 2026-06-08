@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="hr_employee_resign_form_view">
+        <field name="name">hr.employee.form.view</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="joining_date" position="after">
+
+                <field name="resign_date" attrs="{'invisible': [('active', '!=', False)]}"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- ── Company form: Relieving Letter Signature upload ──────── -->
+    <record model="ir.ui.view" id="view_company_relieving_signature">
+        <field name="name">res.company.relieving.signature</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <page name="general_info" position="inside">
+                <group string="Relieving Letter - Header Details">
+                    <group>
+                        <field name="corporate_office_line1"
+                               placeholder="New No:2 Old No:7, North Crescent Road, Lakshmi Colony,"/>
+                        <field name="corporate_office_line2"
+                               placeholder="GN Chetty Road, T. Nagar, Chennai - 600017."/>
+                        <field name="corporate_phone"
+                               placeholder="044-42605110, 42618963, Mobile: +91 9791933074, 83."/>
+                        <field name="head_office_address"
+                               placeholder="747, Amara Complex, S.K.C Road, Erode - 638001. Ph: 0424-2263507"/>
+                    </group>
+                    <group>
+                        <field name="relieving_letter_signature" widget="image"
+                               options="{'size': [200, 100]}"
+                               help="Upload once — used on all Relieving and Experience Letters."/>
+                    </group>
+                </group>
+            </page>
+        </field>
+    </record>
+
+  
+
+
+    
+  
+
+</odoo>

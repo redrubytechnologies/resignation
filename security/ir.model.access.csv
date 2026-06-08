@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+view_hr_resignation,view.ent.hr.resignation,ent_hr_resignation.model_hr_resignation,base.group_user,1,1,1,0
+view_hr_employee,view.hr.employee,hr.model_hr_employee,base.group_user,1,1,1,0
+view_hr_resignation_reason,hr.resignation.reason,model_hr_resignation_reason,base.group_user,1,1,1,1
+access_hr_exit_question_hr,hr.exit.question.hr,model_hr_exit_question,hr.group_hr_user,1,1,1,1
+access_hr_exit_question_user,hr.exit.question.user,model_hr_exit_question,base.group_user,1,0,0,0
+access_hr_exit_question_option_hr,hr.exit.question.option.hr,model_hr_exit_question_option,hr.group_hr_user,1,1,1,1
+access_hr_exit_question_option_user,hr.exit.question.option.user,model_hr_exit_question_option,base.group_user,1,0,0,0
+access_hr_exit_answer_hr,hr.exit.answer.hr,model_hr_exit_answer,hr.group_hr_user,1,1,1,1
+access_hr_exit_answer_user,hr.exit.answer.user,model_hr_exit_answer,base.group_user,1,1,1,0
+access_hr_resignation_inbox_hr,hr.resignation.inbox.hr,model_hr_resignation_inbox,hr.group_hr_user,1,1,1,1
+access_hr_resignation_inbox_user,hr.resignation.inbox.user,model_hr_resignation_inbox,base.group_user,1,0,0,0
